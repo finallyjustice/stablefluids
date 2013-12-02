@@ -1,0 +1,15 @@
+Contact: Dongli Zhang (dongli.zhang0129@gmail.com)
+
+This folder has three sub folders.
+
+GridStableFluid2D:	Implemented with traditional grid.
+
+MacStableFluid2D:	Implemented with Mac grid.
+
+TextureFluid:		Implemented using a bmp picture as texture.
+
+I will upload the comment soon.........
+
+Reference:
+1. Stable Fluids
+2. Visual Simulation of Smoke
