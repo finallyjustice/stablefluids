@@ -2,14 +2,14 @@ Contact: Dongli Zhang (dongli.zhang0129@gmail.com)
 
 This folder has three sub folders.
 
-GridStableFluid2D:	Implemented with traditional grid.
+GridStableFluid2D: Implemented with traditional grid.
 
-MacStableFluid2D:	Implemented with Mac grid.
+MacStableFluid2D:  Implemented with Mac grid.
 
-TextureFluid:		Implemented using a bmp picture as texture.
+TextureFluid:      Implemented using a bmp picture as texture.
 
-I will upload the comment soon.........
+Please refer to here for related demos. http://finallyjustice.github.io/fluid/
 
 Reference:
-1. Stable Fluids
-2. Visual Simulation of Smoke
+1. Stable Fluids, Jos Stam, SIGGRAPH 1999.
+2. Visual Simulation of Smoke, Ronald Fedkiw, Jos Stam, and Henrik Wann Jensen, SIGGRAPH 2001.
