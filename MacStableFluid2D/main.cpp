@@ -1,4 +1,4 @@
-/** File:    main.cpp
+/** File:    Main.cpp
  ** Author:  Dongli Zhang
  ** Contact: dongli.zhang0129@gmail.com
  **
@@ -19,13 +19,13 @@
  ** Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <util.h>
 #include <GL/glut.h>
-#include "StableSolver2D.h"
+#include "MacStableSolver.h"
+#include <stdio.h>
 
-StableSolver2D *solver;
+StableSolver *solver;
 
-int disp_type=0;
+int disp_type=1;
 
 int win_x=800;
 int win_y=800;
@@ -36,53 +36,43 @@ int omy;
 int mx;
 int my;
 
-GLuint tex;
-
-int LoadGLTextures(GLuint& unTexture, const char* chFileName)                
-{
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    unsigned char* pixels = NULL;
-    size_t width  = 0;
-    size_t height = 0;
-    if(!read_png(chFileName, (void**)&pixels, &width, &height, true) || !pixels) {
-        return 0;
-    }
-
-    glGenTextures(1, &unTexture);                    
-    glBindTexture(GL_TEXTURE_2D, unTexture);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-    if(pixels)           
-    {
-        free(pixels);
-    }
-
-    return 1;
-}
-
 void draw_velocity()
 {
-    float *px = solver->getPX();
-    float *py = solver->getPY();
+    /*Vec2f *pvx = solver->getPVX();
+    Vec2f *pvy = solver->getPVY();
     float *vx = solver->getVX();
     float *vy = solver->getVY();
 
     glColor3f(0.0f, 1.0f, 0.0f);
     glLineWidth(1.0f);
-
     glBegin(GL_LINES);
-        for(int i=0; i<solver->getTotSize(); i++)
+        glColor3f(0.0f, 0.0f, 1.0f);
+        for(int i=0; i<solver->getTotVelX(); i++)
         {
-            glVertex2f(px[i], py[i]);
-            glVertex2f(px[i]+vx[i]*10.0f, py[i]+vy[i]*10.0f);
+            glVertex2f(pvx[i].x, pvx[i].y);
+            glVertex2f(pvx[i].x+vx[i]*0.1f, pvx[i].y);
         }
-    glEnd ();
+
+        glColor3f(0.0f, 1.0f, 0.0f);
+        for(int i=0; i<solver->getTotVelY(); i++)
+        {
+            glVertex2f(pvy[i].x, pvy[i].y);
+            glVertex2f(pvy[i].x, pvy[i].y+vy[i]*0.1f);
+        }
+    glEnd ();*/
+
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glLineWidth(1.0f);
+    glBegin(GL_LINES);
+        for(int i=0; i<solver->getRowCell(); i++)
+        {
+            for(int j=0; j<solver->getColCell(); j++)
+            {
+                glVertex2f((float)i+0.5f, (float)j+0.5f);
+                glVertex2f((float)i+0.5f+solver->getCellVel(i, j).x*10.0f, (float)j+0.5f+solver->getCellVel(i, j).y*10.0f);
+            }
+        }
+    glEnd();
 }
 
 void draw_density()
@@ -94,14 +84,14 @@ void draw_density()
     float d10;
     float d11;
 
-    int rowSize = solver->getRowSize();
-    int colSize = solver->getColSize();
+    int rowSize = solver->getRowCell();
+    int colSize = solver->getColCell();
 
     glBegin(GL_QUADS);
-        for(int i=1; i<=rowSize; i++)
+        for(int i=1; i<=rowSize-2; i++)
         {
             x = (float)i;
-            for(int j=1; j<=colSize; j++)
+            for(int j=1; j<=colSize-2; j++)
             {
                 y = (float)j;
 
@@ -119,60 +109,27 @@ void draw_density()
     glEnd();
 }
 
-void draw_texture()
-{
-    glBindTexture(GL_TEXTURE_2D, tex);
-    glColor3f(1.0f, 1.0f, 1.0f);
-
-    float rowSize = (float)(solver->getRowSize());
-    float colSize = (float)(solver->getColSize());
-
-    float x;
-    float y;
-
-    float *tx = solver->getTX();
-    float *ty = solver->getTY();
-
-    glBegin(GL_QUADS); 
-        for(int i=0; i<rowSize; i++)
-        {
-            x = (float)i;
-
-            for(int j=0; j<colSize; j++)
-            {
-                y = (float)j;
-
-                glTexCoord2f((tx[solver->getIndex(i, j)] - 0.5f)/((float)rowSize), (ty[solver->getIndex(i, j)] - 0.5f)/((float)rowSize)); glVertex2f(x+1.0f, y+1.0f);
-                glTexCoord2f((tx[solver->getIndex(i+1, j)] - 0.5f)/((float)rowSize), (ty[solver->getIndex(i+1, j)] - 0.5f)/((float)rowSize)); glVertex2f(x+2.0f, y+1.0f);
-                glTexCoord2f((tx[solver->getIndex(i+1, j+1)] - 0.5f)/((float)rowSize), (ty[solver->getIndex(i+1, j+1)] - 0.5f)/((float)rowSize)); glVertex2f(x+2.0f, y+2.0f);
-                glTexCoord2f((tx[solver->getIndex(i, j+1)] - 0.5f)/((float)rowSize), (ty[solver->getIndex(i, j+1)] - 0.5f)/((float)rowSize)); glVertex2f(x+1.0f, y+2.0f);
-            }
-        }
-    glEnd();
-}
-
 void get_input()
 {
     solver->cleanBuffer();
 
-    //int totSize = solver->getTotSize();
-    int rowSize = solver->getRowSize();
-    int colSize = solver->getColSize();
+    //int totCell = solver->getTotCell();
+    int rowCell = solver->getRowCell();
+    int colCell = solver->getColCell();
 
     int xPos;
     int yPos;
 
     if(mouse_down[0] || mouse_down[2])
     {
-        xPos = (int)((float)(omx)/win_x*(rowSize+2));
-        yPos = (int)((float)(win_y - omy)/win_y*(colSize+2));
+        xPos = (int)((float)(omx)/win_x*(rowCell));
+        yPos = (int)((float)(win_y - omy)/win_y*(colCell));
 
-        if(xPos > 0 && xPos < rowSize+1 && yPos > 0 && yPos < colSize+1)
+        if(xPos > 0 && xPos < rowCell-1 && yPos > 0 && yPos < colCell-1)
         {
             if(mouse_down[0])
             {
-                solver->setVX0(xPos, yPos, 1.0f * (mx - omx));
-                solver->setVY0(xPos, yPos, 1.0f * (omy - my));
+                solver->setVel0(xPos, yPos, 1.0f * (mx - omx), 1.0f * (omy - my));
             }
 
             if(mouse_down[2])
@@ -194,7 +151,7 @@ void key_func(unsigned char key, int x, int y)
     {
         case 'v':
         case 'V':
-            disp_type = (disp_type+1) % 3;
+            disp_type = (disp_type+1) % 2;
             break;
 
         case ' ':
@@ -209,7 +166,7 @@ void key_func(unsigned char key, int x, int y)
             break;
         case 'c':
         case 'C':
-            solver->clear();
+            solver->reset();
             break;
         case 27: // escape
             exit(0);
@@ -250,58 +207,48 @@ void idle_func()
  void display_func()
 {
     get_input();
-    solver->anim_vel();
-    solver->anim_tex();
-    solver->anim_den();
+    solver->animVel();
+    solver->animDen();
 
     glViewport(0, 0, win_x, win_y);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity ();
-    gluOrtho2D(0.0f, (float)(solver->getRowSize()+2), 0.0f, (float)(solver->getColSize()+2));
+    gluOrtho2D(0.0f, (float)(solver->getRowCell()), 0.0f, (float)(solver->getColCell()));
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    if(disp_type == 2) 
-    {
-        draw_density ();
-    }
+    if(disp_type == 0) draw_density();
+    if(disp_type == 1) draw_velocity();
 
-    if(disp_type == 1) 
-    {
-        draw_velocity();
-    }
-        
-    if(disp_type == 0)
-    {
-        draw_texture();
-    }
-
-    /*glColor3f(1.0f, 0.0f, 0.0f);
-    glPointSize(1.0f);
-    glBegin(GL_POINTS);
-        for(int i=0; i<solver->getTotSize(); i++)
+    glColor3f(0.9f, 0.9f, 0.9f);
+    glBegin(GL_LINES);
+        for(float i=0.0f; i<=(float)(solver->getRowCell()+1); i+=1.0f)
         {
-            glVertex2f(solver->getPX()[i], solver->getPY()[i]);
+            glVertex2f(i, 0.0f);
+            glVertex2f(i, (float)(solver->getColCell()+1));
         }
-    glEnd();*/
+        for(float i=0.0f; i<=(float)(solver->getColCell()+1); i+=1.0f)
+        {
+            glVertex2f(0.0f, i);
+            glVertex2f((float)(solver->getRowCell()+1), i);
+        }
+    glEnd();
 
     glutSwapBuffers ();
 }
 
 int main(int argc, char** argv)
 {
-    solver=new StableSolver2D();
-    solver->reset(128, 128);
+    solver=new StableSolver();
+    solver->init();
+    solver->reset();
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
     glutInitWindowPosition(0, 0);
     glutInitWindowSize(win_x, win_y);
     glutCreateWindow("StableFluid2D");
-
-    glEnable(GL_TEXTURE_2D);
-    LoadGLTextures(tex, "data/chesterfield_normal.png");
 
     glutKeyboardFunc(key_func);
     glutMouseFunc(mouse_func);
