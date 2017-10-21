@@ -1,6 +1,6 @@
-/** File:		Vector2f.h
- ** Author:		Dongli Zhang
- ** Contact:	dongli.zhang0129@gmail.com
+/** File:    Vector2f.h
+ ** Author:  Dongli Zhang
+ ** Contact: dongli.zhang0129@gmail.com
  **
  ** Copyright (C) Dongli Zhang 2013
  **
@@ -27,47 +27,47 @@
 class Vec2f
 {
 public:
-	float x;
-	float y;
+    float x;
+    float y;
 
 public:
-	Vec2f() {}
-	Vec2f(float _x, float _y) { x=_x; y=_y; };
-	Vec2f(Vec2f &vec) { x=vec.x; y=vec.y; };
+    Vec2f() {}
+    Vec2f(float _x, float _y) { x=_x; y=_y; };
+    Vec2f(const Vec2f &vec) { x=vec.x; y=vec.y; };
 
-	Vec2f operator + (const Vec2f &vec) const { return Vec2f(x+vec.x, y+vec.y); }
-	Vec2f operator - (const Vec2f &vec) const { return Vec2f(x-vec.x, y-vec.y); }
-	Vec2f operator * (const Vec2f &vec) const { return Vec2f(x*vec.x, y*vec.y); }
-	Vec2f operator / (const Vec2f &vec) const { return Vec2f(x/vec.x, y/vec.y); }
+    Vec2f operator + (const Vec2f &vec) const { return Vec2f(x+vec.x, y+vec.y); }
+    Vec2f operator - (const Vec2f &vec) const { return Vec2f(x-vec.x, y-vec.y); }
+    Vec2f operator * (const Vec2f &vec) const { return Vec2f(x*vec.x, y*vec.y); }
+    Vec2f operator / (const Vec2f &vec) const { return Vec2f(x/vec.x, y/vec.y); }
 
-	friend  Vec2f operator + (const Vec2f &vec, float n) { return Vec2f(vec.x+n, vec.y+n); }
-	friend  Vec2f operator - (const Vec2f &vec, float n) { return Vec2f(vec.x-n, vec.y-n); }
-	friend  Vec2f operator * (const Vec2f &vec, float n) { return Vec2f(vec.x*n, vec.y*n); }
-	friend  Vec2f operator / (const Vec2f &vec, float n) { return Vec2f(vec.x/n, vec.y/n); }
+    friend  Vec2f operator + (const Vec2f &vec, float n) { return Vec2f(vec.x+n, vec.y+n); }
+    friend  Vec2f operator - (const Vec2f &vec, float n) { return Vec2f(vec.x-n, vec.y-n); }
+    friend  Vec2f operator * (const Vec2f &vec, float n) { return Vec2f(vec.x*n, vec.y*n); }
+    friend  Vec2f operator / (const Vec2f &vec, float n) { return Vec2f(vec.x/n, vec.y/n); }
 
-	friend  Vec2f operator + (float n, const Vec2f &vec) { return Vec2f(n+vec.x, n+vec.y); }
-	friend  Vec2f operator - (float n, const Vec2f &vec) { return Vec2f(n-vec.x, n-vec.y); }
-	friend  Vec2f operator * (float n, const Vec2f &vec) { return Vec2f(n*vec.x, n*vec.y); }
-	friend  Vec2f operator / (float n, const Vec2f &vec) { return Vec2f(n/vec.x, n/vec.y); }
+    friend  Vec2f operator + (float n, const Vec2f &vec) { return Vec2f(n+vec.x, n+vec.y); }
+    friend  Vec2f operator - (float n, const Vec2f &vec) { return Vec2f(n-vec.x, n-vec.y); }
+    friend  Vec2f operator * (float n, const Vec2f &vec) { return Vec2f(n*vec.x, n*vec.y); }
+    friend  Vec2f operator / (float n, const Vec2f &vec) { return Vec2f(n/vec.x, n/vec.y); }
 
-	float Dot(const Vec2f &vec) const { return x*vec.x+y*vec.y; }
-	Vec2f genNormal() const { return  *this / Length();} 
-	void Normalize() { *this = *this / Length(); }
+    float Dot(const Vec2f &vec) const { return x*vec.x+y*vec.y; }
+    Vec2f genNormal() const { return  *this / Length();} 
+    void Normalize() { *this = *this / Length(); }
 
-	float LengthSquared() const { return x*x+y*y; }
-	float Length() const { return sqrt(LengthSquared()); }
+    float LengthSquared() const { return x*x+y*y; }
+    float Length() const { return sqrt(LengthSquared()); }
 };
 
 class Vec2i
 {
 public:
-	int x;
-	int y;
+    int x;
+    int y;
 
 public:
-	Vec2i(){}
-	Vec2i(int _x, int _y){ x=_x; y=_y; }
-	Vec2i(Vec2i &vec) { x=vec.x; y=vec.y; }
+    Vec2i(){}
+    Vec2i(int _x, int _y){ x=_x; y=_y; }
+    Vec2i(const Vec2i &vec) { x=vec.x; y=vec.y; }
 };
 
 #endif
